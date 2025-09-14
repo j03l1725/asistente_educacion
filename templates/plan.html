@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="form-container">
+    <h2>Generar Plan de Clase</h2>
+    <form id="plan-form" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="areaConocimiento">Área de Conocimiento *</label>
+            <input type="text" id="areaConocimiento" name="areaConocimiento" placeholder="ej. Ciencias Naturales" required>
+        </div>
+        <div class="form-group">
+            <label for="anioLectivo">Año Lectivo *</label>
+            <input type="text" id="anioLectivo" name="anioLectivo" placeholder="ej. 1er Grado" required>
+        </div>
+        <div class="form-group">
+            <label for="temaCentral">Tema Central *</label>
+            <input type="text" id="temaCentral" name="temaCentral" placeholder="ej. Fotosíntesis" required>
+        </div>
+        <div class="form-group">
+            <label for="objetivoAprendizaje">Objetivo de Aprendizaje *</label>
+            <textarea id="objetivoAprendizaje" name="objetivoAprendizaje" placeholder="ej. Comprender el proceso de fotosíntesis" required></textarea>
+        </div>
+        <div class="form-group">
+            <label for="tiempoDisponibleMin">Tiempo Disponible (minutos)</label>
+            <input type="number" id="tiempoDisponibleMin" name="tiempoDisponibleMin" min="1">
+        </div>
+        <div class="form-group">
+            <label for="modo">Modo</label>
+            <select id="modo" name="modo">
+                <option value="estándar">Estándar</option>
+                <option value="más interactivo">Más Interactivo</option>
+                <option value="simplificado">Simplificado</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="materialBasePdf">Material Base PDF (opcional)</label>
+            <input type="file" id="materialBasePdf" name="materialBasePdf" accept=".pdf">
+        </div>
+        <button type="submit" class="btn-primary">Generar Plan</button>
+    </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/plan.js') }}"></script>
+{% endblock %}

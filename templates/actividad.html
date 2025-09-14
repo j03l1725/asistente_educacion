@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="form-container">
+    <h2>Generar Actividad</h2>
+    <form id="actividad-form" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="titulo">Título *</label>
+            <input type="text" id="titulo" name="titulo" placeholder="ej. Actividad de Suma" required>
+        </div>
+        <div class="form-group">
+            <label for="objetivoAprendizaje">Objetivo de Aprendizaje</label>
+            <textarea id="objetivoAprendizaje" name="objetivoAprendizaje" placeholder="ej. Resolver sumas básicas"></textarea>
+        </div>
+        <div class="form-group">
+            <label for="areaConocimiento">Área de Conocimiento</label>
+            <input type="text" id="areaConocimiento" name="areaConocimiento" placeholder="ej. Matemáticas">
+        </div>
+        <div class="form-group">
+            <label for="anioLectivo">Año Lectivo</label>
+            <input type="text" id="anioLectivo" name="anioLectivo" placeholder="ej. 2do Grado">
+        </div>
+        <div class="form-group">
+            <label for="temaCentral">Tema Central</label>
+            <input type="text" id="temaCentral" name="temaCentral" placeholder="ej. Suma">
+        </div>
+        <div class="form-group">
+            <label for="tiempoMin">Tiempo (minutos)</label>
+            <input type="number" id="tiempoMin" name="tiempoMin" min="5">
+        </div>
+        <div class="form-group">
+            <label for="tipoInstrumento">Tipo de Instrumento *</label>
+            <select id="tipoInstrumento" name="tipoInstrumento" required>
+                <option value="rubrica">Rúbrica</option>
+                <option value="cuestionario">Cuestionario</option>
+                <option value="estudio_de_caso">Estudio de Caso</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="preferencias">Preferencias</label>
+            <textarea id="preferencias" name="preferencias" placeholder="ej. Enfocarse en ejemplos prácticos"></textarea>
+        </div>
+        <div class="form-group">
+            <label for="materialBasePdf">Material Base PDF (opcional)</label>
+            <input type="file" id="materialBasePdf" name="materialBasePdf" accept=".pdf">
+        </div>
+        <button type="submit" class="btn-primary">Generar Actividad</button>
+    </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/actividad.js') }}"></script>
+{% endblock %}

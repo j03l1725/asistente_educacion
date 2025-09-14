@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduPlanner AI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <h1 class="nav-title">EduPlanner AI</h1>
+            <div class="nav-tabs">
+                <a href="{{ url_for('plan_page') }}" class="nav-tab {% if request.endpoint == 'plan_page' %}active{% endif %}">Plan de Clase</a>
+                <a href="{{ url_for('actividad_page') }}" class="nav-tab {% if request.endpoint == 'actividad_page' %}active{% endif %}">Actividades</a>
+                <a href="{{ url_for('calificar_page') }}" class="nav-tab {% if request.endpoint == 'calificar_page' %}active{% endif %}">Calificar con Rúbrica</a>
+                <a href="{{ url_for('convertir_page') }}" class="nav-tab {% if request.endpoint == 'convertir_page' %}active{% endif %}">Convertir a PDF</a>
+            </div>
+        </div>
+    </nav>
+    <main class="main-content">
+        <div class="form-panel">
+            {% block content %}{% endblock %}
+        </div>
+        <div class="preview-panel">
+            <div class="preview-header">
+                <h3>Vista Previa</h3>
+                <div class="preview-actions">
+                    <button id="copy-btn" class="btn-secondary">Copiar</button>
+                    <button id="download-btn" class="btn-primary">Descargar .md</button>
+                    <button id="download-pdf-btn" class="btn-secondary">Descargar PDF</button>
+                    <button id="regenerate-btn" class="btn-accent">Regenerar</button>
+                </div>
+            </div>
+            <div id="preview-content" class="preview-content">
+                <div id="loading-spinner" class="loading-spinner"></div>
+            </div>
+        </div>
+    </main>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>
