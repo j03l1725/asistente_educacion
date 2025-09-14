@@ -206,11 +206,114 @@ body {
     color: var(--text-primary);
 }
 
-@media (max-width: 768px) {
-    .main-content {
-        flex-direction: column;
+/* Tablet styles */
+@media (max-width: 1024px) {
+    .nav-container {
+        padding: 0 1rem;
     }
     .nav-tabs {
         gap: 1rem;
+    }
+    .main-content {
+        padding: 0 1rem;
+        gap: 1.5rem;
+    }
+    .form-panel, .preview-panel {
+        padding: 1.5rem;
+    }
+    .preview-actions {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    .btn-primary, .btn-secondary, .btn-accent {
+        padding: 0.6rem 1rem;
+        font-size: 0.9rem;
+    }
+}
+
+/* Mobile styles */
+@media (max-width: 768px) {
+    .navbar {
+        padding: 0.5rem 0;
+    }
+    .nav-container {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 0 1rem;
+    }
+    .nav-title {
+        font-size: 1.2rem;
+        margin-bottom: 0.5rem;
+    }
+    .nav-tabs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        width: 100%;
+    }
+    .nav-tab {
+        flex: 1;
+        min-width: 120px;
+        padding: 0.5rem;
+        font-size: 0.8rem;
+        text-align: center;
+    }
+    .main-content {
+        flex-direction: column;
+        padding: 0 0.5rem;
+        gap: 1rem;
+    }
+    .form-panel, .preview-panel {
+        padding: 1rem;
+        border-radius: 12px;
+    }
+    .form-group input, .form-group textarea, .form-group select {
+        font-size: 1rem; /* Prevent zoom on iOS */
+    }
+    .btn-primary, .btn-secondary, .btn-accent {
+        width: 100%;
+        padding: 0.75rem;
+        font-size: 1rem;
+        margin-bottom: 0.5rem;
+    }
+    .preview-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+    .preview-header h3 {
+        font-size: 1.1rem;
+    }
+    .preview-actions {
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    .preview-content {
+        font-size: 0.9rem;
+        min-height: 300px;
+    }
+    .loading-spinner {
+        width: 40px;
+        height: 40px;
+    }
+}
+
+/* Small mobile styles */
+@media (max-width: 480px) {
+    .nav-tabs {
+        flex-direction: column;
+    }
+    .nav-tab {
+        width: 100%;
+    }
+    .form-container h2 {
+        font-size: 1.3rem;
+    }
+    .preview-actions {
+        flex-direction: column;
+    }
+    .btn-primary, .btn-secondary, .btn-accent {
+        width: 100%;
     }
 }
