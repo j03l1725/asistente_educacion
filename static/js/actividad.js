@@ -1,96 +1,129 @@
-// Load saved form data
+// Load saved form data and attach event listeners
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('actividad-form');
-    const inputs = form.querySelectorAll('input, textarea, select');
-    inputs.forEach(input => {
-        const saved = localStorage.getItem(`actividad_${input.name}`);
-        if (saved) input.value = saved;
-        input.addEventListener('input', () => {
-            localStorage.setItem(`actividad_${input.name}`, input.value);
+    if (form) {
+        const inputs = form.querySelectorAll('input, textarea, select');
+        inputs.forEach(input => {
+            if (input.type === 'file') return;
+            const saved = localStorage.getItem(`actividad_${input.name}`);
+            if (saved) input.value = saved;
+            input.addEventListener('input', () => {
+                localStorage.setItem(`actividad_${input.name}`, input.value);
+            });
         });
-    });
+    }
+
+    // Initialize Lucide icons for dynamic content
+    lucide.createIcons();
+
+    // Attach form submit listener
+    if (form) {
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            showLoading();
+            const formData = new FormData(e.target);
+            try {
+                const response = await fetch('/api/actividad', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    window.__lastMarkdown = data.markdown;
+                    const preview = document.getElementById('preview');
+                    if (preview) preview.innerHTML = marked.parse(data.markdown);
+                    toast('Actividad generada exitosamente');
+                } else {
+                    toast('Error: ' + data.error);
+                }
+            } catch (error) {
+                toast('Error de conexión');
+            } finally {
+                hideLoading();
+            }
+        });
+    }
+
+    // Attach button listeners
+    const copyBtn = document.getElementById('copyBtn');
+    if (copyBtn) {
+        copyBtn.addEventListener('click', () => {
+            if (window.__lastMarkdown) {
+                navigator.clipboard.writeText(window.__lastMarkdown);
+                toast('Copiado al portapapeles');
+            } else {
+                toast('No hay contenido para copiar');
+            }
+        });
+    }
+
+    const downloadMdBtn = document.getElementById('downloadMdBtn');
+    if (downloadMdBtn) {
+        downloadMdBtn.addEventListener('click', () => {
+            if (window.__lastMarkdown) {
+                const blob = new Blob([window.__lastMarkdown], { type: 'text/markdown' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'actividad.md';
+                a.click();
+                URL.revokeObjectURL(url);
+                toast('Archivo descargado');
+            } else {
+                toast('No hay contenido para descargar');
+            }
+        });
+    }
+
+    const downloadPdfBtn = document.getElementById('downloadPdfBtn');
+    if (downloadPdfBtn) {
+        downloadPdfBtn.addEventListener('click', async () => {
+            if (window.__lastMarkdown) {
+                try {
+                    const response = await fetch('/api/download_pdf', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ markdown: window.__lastMarkdown })
+                    });
+                    if (response.ok) {
+                        const blob = await response.blob();
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = 'actividad.pdf';
+                        a.click();
+                        URL.revokeObjectURL(url);
+                        toast('PDF descargado');
+                    } else {
+                        toast('Error al descargar PDF');
+                    }
+                } catch (error) {
+                    toast('Error de conexión');
+                }
+            } else {
+                toast('No hay contenido para descargar');
+            }
+        });
+    }
+
+    const regenerateBtn = document.getElementById('regenerate-btn');
+    if (regenerateBtn) {
+        regenerateBtn.addEventListener('click', () => {
+            if (form) form.dispatchEvent(new Event('submit'));
+        });
+    }
 });
 
 function showLoading() {
-    document.getElementById('loading-spinner').style.display = 'block';
+    const spinner = document.getElementById('loading-spinner');
+    if (spinner) spinner.style.display = 'block';
     const submitBtn = document.querySelector('button[type="submit"]');
     if (submitBtn) submitBtn.disabled = true;
 }
 
 function hideLoading() {
-    document.getElementById('loading-spinner').style.display = 'none';
+    const spinner = document.getElementById('loading-spinner');
+    if (spinner) spinner.style.display = 'none';
     const submitBtn = document.querySelector('button[type="submit"]');
     if (submitBtn) submitBtn.disabled = false;
 }
-
-document.getElementById('actividad-form').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    showLoading();
-    const formData = new FormData(e.target);
-    try {
-        const response = await fetch('/api/actividad', {
-            method: 'POST',
-            body: formData
-        });
-        const data = await response.json();
-        if (response.ok) {
-            document.getElementById('preview-content').innerHTML = marked.parse(data.markdown);
-            window.currentMarkdown = data.markdown;
-        } else {
-            alert(data.error);
-        }
-    } catch (error) {
-        alert('Error de conexión');
-    } finally {
-        hideLoading();
-    }
-});
-
-document.getElementById('copy-btn').addEventListener('click', () => {
-    const content = document.getElementById('preview-content').textContent;
-    navigator.clipboard.writeText(content);
-    alert('Copiado al portapapeles');
-});
-
-document.getElementById('download-btn').addEventListener('click', () => {
-    const content = document.getElementById('preview-content').textContent;
-    const blob = new Blob([content], { type: 'text/markdown' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'actividad.md';
-    a.click();
-    URL.revokeObjectURL(url);
-});
-
-document.getElementById('download-pdf-btn').addEventListener('click', async () => {
-    const markdown = window.currentMarkdown;
-    if (!markdown) {
-        alert('No hay contenido para descargar');
-        return;
-    }
-    try {
-        const response = await fetch('/api/download_pdf', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ markdown })
-        });
-        if (response.ok) {
-            const blob = await response.blob();
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'generated_content.pdf';
-            a.click();
-            URL.revokeObjectURL(url);
-        } else {
-            alert('Error al descargar PDF');
-        }
-    } catch (error) {
-        alert('Error de conexión');
-    }
-});
-
-document.getElementById('regenerate-btn').addEventListener('click', () => {
-    document.getElementById('actividad-form').dispatchEvent(new Event('submit'));
-});

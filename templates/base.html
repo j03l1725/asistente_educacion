@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,41 +7,187 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        bg: '#0B0F1A',
+                        card: 'rgba(17, 24, 39, 0.6)',
+                        neon: '#00E5FF',
+                        violet: '#7C3AED',
+                        'text-primary': '#E5E7EB',
+                        'text-muted': '#9CA3AF'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Space Grotesk', 'sans-serif']
+                    },
+                    boxShadow: {
+                        glow: '0 0 32px rgba(0, 229, 255, 0.25)'
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        .glass {
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            background: rgba(17, 24, 39, 0.6);
+        }
+        .ring-neon:focus-visible {
+            box-shadow: 0 0 0 2px rgba(0, 229, 255, 0.6), 0 0 32px rgba(0, 229, 255, 0.25);
+            outline: none;
+        }
+        .skeleton {
+            animation: pulse 1.5s ease-in-out infinite;
+            background: linear-gradient(90deg, rgba(255,255,255,.06) 25%, rgba(255,255,255,.12) 37%, rgba(255,255,255,.06) 63%);
+            background-size: 400% 100%;
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .skeleton { animation: none; }
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .loading-spinner {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80px;
+            height: 80px;
+            border: 6px solid rgba(0, 229, 255, 0.3);
+            border-top: 6px solid #00E5FF;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            box-shadow: 0 0 40px rgba(0, 229, 255, 0.8);
+            background: rgba(11, 15, 26, 0.95);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            z-index: 10;
+        }
+
+        @keyframes spin {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .loading-spinner { animation: none; }
+        }
+    </style>
 </head>
-<body>
-    <nav class="navbar">
-        <div class="nav-container">
-            <h1 class="nav-title">EduPlanner AI</h1>
-            <div class="nav-tabs">
-                <a href="{{ url_for('plan_page') }}" class="nav-tab {% if request.endpoint == 'plan_page' %}active{% endif %}">Plan de Clase</a>
-                <a href="{{ url_for('actividad_page') }}" class="nav-tab {% if request.endpoint == 'actividad_page' %}active{% endif %}">Actividades</a>
-                <a href="{{ url_for('calificar_page') }}" class="nav-tab {% if request.endpoint == 'calificar_page' %}active{% endif %}">Calificar con Rúbrica</a>
-                <a href="{{ url_for('convertir_page') }}" class="nav-tab {% if request.endpoint == 'convertir_page' %}active{% endif %}">Convertir a PDF</a>
+<body class="bg-bg text-text-primary font-sans min-h-screen">
+    <!-- Navbar -->
+    <nav class="sticky top-0 z-50 glass border-b border-white/10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 bg-gradient-to-br from-neon to-violet rounded-lg flex items-center justify-center">
+                        <i data-lucide="brain" class="w-5 h-5 text-white"></i>
+                    </div>
+                    <h1 class="text-xl font-display font-bold text-neon">EduPlanner AI</h1>
+                </div>
+                <div class="hidden md:flex space-x-1">
+                    <a href="{{ url_for('plan_page') }}" class="nav-tab px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 {% if request.path == '/plan' %}bg-neon/20 text-neon border border-neon/30{% else %}text-text-muted hover:bg-white/5 hover:text-text-primary{% endif %}">Plan de Clase</a>
+                    <a href="{{ url_for('actividad_page') }}" class="nav-tab px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 {% if request.path == '/actividad' %}bg-neon/20 text-neon border border-neon/30{% else %}text-text-muted hover:bg-white/5 hover:text-text-primary{% endif %}">Actividades</a>
+                    <a href="{{ url_for('calificar_page') }}" class="nav-tab px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 {% if request.path == '/calificar' %}bg-neon/20 text-neon border border-neon/30{% else %}text-text-muted hover:bg-white/5 hover:text-text-primary{% endif %}">Calificar con Rúbrica</a>
+                    <a href="{{ url_for('convertir_page') }}" class="nav-tab px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 {% if request.path == '/convertir' %}bg-neon/20 text-neon border border-neon/30{% else %}text-text-muted hover:bg-white/5 hover:text-text-primary{% endif %}">Convertir a PDF</a>
+                </div>
+                <!-- Mobile menu button -->
+                <div class="md:hidden">
+                    <button class="text-text-primary hover:text-neon" aria-label="Menú">
+                        <i data-lucide="menu" class="w-6 h-6"></i>
+                    </button>
+                </div>
             </div>
         </div>
     </nav>
-    <main class="main-content">
-        <div class="form-panel">
-            {% block content %}{% endblock %}
-        </div>
-        <div class="preview-panel">
-            <div class="preview-header">
-                <h3>Vista Previa</h3>
-                <div class="preview-actions">
-                    <button id="copy-btn" class="btn-secondary">Copiar</button>
-                    <button id="download-btn" class="btn-primary">Descargar .md</button>
-                    <button id="download-pdf-btn" class="btn-secondary">Descargar PDF</button>
-                    <button id="regenerate-btn" class="btn-accent">Regenerar</button>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Form Section -->
+            <section class="glass rounded-2xl p-6 border border-white/10">
+                {% block content %}{% endblock %}
+            </section>
+
+            <!-- Preview Section -->
+            <aside class="glass rounded-2xl border border-white/10">
+                <div class="p-6 border-b border-white/10">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-lg font-semibold text-text-primary flex items-center space-x-2">
+                            <i data-lucide="eye" class="w-5 h-5 text-neon"></i>
+                            <span>Vista Previa</span>
+                        </h3>
+                        <div class="flex space-x-2">
+                            <button id="copyBtn" class="flex items-center space-x-1 px-3 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-sm font-medium transition-all duration-200 ring-neon" aria-label="Copiar contenido">
+                                <i data-lucide="copy" class="w-4 h-4"></i>
+                                <span class="hidden sm:inline">Copiar</span>
+                            </button>
+                            <button id="downloadMdBtn" class="flex items-center space-x-1 px-3 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-sm font-medium transition-all duration-200 ring-neon" aria-label="Descargar como Markdown">
+                                <i data-lucide="download" class="w-4 h-4"></i>
+                                <span class="hidden sm:inline">.md</span>
+                            </button>
+                            <button id="downloadPdfBtn" class="flex items-center space-x-1 px-3 py-2 bg-neon/20 hover:bg-neon/30 text-neon rounded-lg text-sm font-medium transition-all duration-200 ring-neon" aria-label="Descargar como PDF">
+                                <i data-lucide="file-text" class="w-4 h-4"></i>
+                                <span class="hidden sm:inline">PDF</span>
+                            </button>
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <div id="preview-content" class="preview-content">
-                <div id="loading-spinner" class="loading-spinner"></div>
-            </div>
+                <div class="p-6">
+                    <div id="preview" class="prose prose-invert max-w-none relative">
+                        <div id="loading-spinner" class="loading-spinner"></div>
+                        <div class="skeleton h-4 mb-2 rounded"></div>
+                        <div class="skeleton h-4 mb-2 rounded w-3/4"></div>
+                        <div class="skeleton h-4 mb-2 rounded w-1/2"></div>
+                        <div class="skeleton h-4 mb-4 rounded"></div>
+                        <div class="skeleton h-32 rounded"></div>
+                    </div>
+                </div>
+            </aside>
         </div>
     </main>
-    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="fixed bottom-4 right-4 z-50"></div>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Toast function
+        window.toast = function(message) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'glass px-4 py-3 rounded-xl border border-white/10 text-text-primary shadow-lg transform translate-y-full opacity-0 transition-all duration-300';
+            toast.innerHTML = `<div class="flex items-center space-x-2"><i data-lucide="check-circle" class="w-5 h-5 text-green-400"></i><span>${message}</span></div>`;
+            container.appendChild(toast);
+            lucide.createIcons();
+            setTimeout(() => {
+                toast.classList.remove('translate-y-full', 'opacity-0');
+            }, 100);
+            setTimeout(() => {
+                toast.classList.add('translate-y-full', 'opacity-0');
+                setTimeout(() => container.removeChild(toast), 300);
+            }, 2400);
+        }
+
+        // Respect reduced motion
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            document.documentElement.style.setProperty('--transition-duration', '0s');
+        }
+    </script>
     {% block scripts %}{% endblock %}
 </body>
 </html>
